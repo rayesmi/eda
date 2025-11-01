@@ -1,0 +1,50 @@
+# Step 1: Import Libraries
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from statsmodels.tsa.seasonal import seasonal_decompose
+from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+from statsmodels.tsa.stattools import adfuller
+# Step 2: Load Dataset (Example: AirPassengers dataset)
+url = "https://raw.githubusercontent.com/jbrownlee/Datasets/master/airline-passengers.csv"
+data = pd.read_csv(url, parse_dates=['Month'], index_col='Month')
+print("Dataset Head:\n", data.head())
+# Step 3: Basic Plot
+plt.figure(figsize=(10,5))
+plt.plot(data, label="Passengers")
+plt.title("Airline Passengers Over Time")
+plt.xlabel("Year")
+plt.ylabel("Number of Passengers")
+plt.legend()
+plt.show()
+# Step 4: Rolling Mean and Std
+rolling_mean = data.rolling(window=12).mean()
+rolling_std = data.rolling(window=12).std()26
+plt.figure(figsize=(10,5))
+plt.plot(data, label="Original")
+plt.plot(rolling_mean, color='red', label="Rolling Mean (12 months)")
+plt.plot(rolling_std, color='green', label="Rolling Std (12 months)")
+plt.title("Rolling Mean & Standard Deviation")
+plt.legend()
+plt.show()
+# Step 5: Decomposition (Trend, Seasonality, Residuals)
+decomposition = seasonal_decompose(data['Passengers'], model='multiplicative')
+fig = decomposition.plot()
+fig.set_size_inches(10, 8)
+plt.show()
+# Step 6: ACF and PACF Plots
+plot_acf(data['Passengers'])
+plt.show()
+plot_pacf(data['Passengers'])
+plt.show()
+# Step 7: Stationarity Test (ADF Test)
+result = adfuller(data['Passengers'])
+print("ADF Statistic:", result[0])
+print("p-value:", result[1])
+for key, value in result[4].items():
+ print('Critical Value ({}): {:.3f}'.format(key, value))
+if result[1] < 0.05:
+ print("The series is Stationary")
+else:
+ print("The series is Non-Stationary")
