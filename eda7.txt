@@ -1,0 +1,48 @@
+# --- Step 1: Import Libraries ---
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+# --- Step 2: Load Dataset (semicolon separator!) ---
+wine_data = pd.read_csv("winequality-red.csv", sep=";")
+# --- Step 3: Basic Info & Summary ---
+print("Dataset Info:")
+print(wine_data.info())
+print("\nSummary Statistics:")
+print(wine_data.describe())
+print("\nMissing Values:")
+print(wine_data.isnull().sum())
+# --- Step 4: Distribution of Target (Quality) ---
+plt.figure(figsize=(6,4))
+sns.countplot(x="quality", data=wine_data, palette="viridis")
+plt.title("Distribution of Wine Quality")
+plt.show()
+# --- Step 5: Correlation Heatmap ---
+plt.figure(figsize=(12,6))
+corr_matrix = wine_data.corr()
+sns.heatmap(corr_matrix, annot=True, cmap="coolwarm", fmt=".2f")
+plt.title("Correlation Heatmap of Features")
+plt.show()41
+# --- Step 6: Boxplots (Feature vs. Quality) ---
+features = wine_data.columns[:-1] # exclude "quality"
+for feature in features:
+plt.figure(figsize=(6,4))
+sns.boxplot(x="quality", y=feature, data=wine_data, palette="Set2")
+plt.title(f"{feature} vs Wine Quality")
+plt.show()
+# --- Step 7: Distribution of Features (Histograms) ---
+wine_data.hist(bins=15, figsize=(15,10), layout=(4,3), color="skyblue", edgecolor="black")
+plt.suptitle("Feature Distributions", fontsize=16)
+plt.tight_layout()
+plt.show()
+# --- Step 8: Pairplot for Selected Features ---
+selected = ["alcohol", "sulphates", "citric acid", "volatile acidity", "quality"]
+sns.pairplot(wine_data[selected], hue="quality", palette="husl")
+plt.show()
+# --- Step 9: Outlier Detection (IQR method) ---
+Q1 = wine_data.quantile(0.25)
+Q3 = wine_data.quantile(0.75)
+IQR = Q3 - Q1
+outliers = ((wine_data < (Q1 - 1.5 * IQR)) | (wine_data > (Q3 + 1.5 * IQR))).sum()
+print("\nNumber of Outliers per Feature:")
+print(outliers)
