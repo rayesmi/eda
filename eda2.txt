@@ -1,0 +1,50 @@
+# Step 1: Import Libraries
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_diabetes
+# Step 2: Load Dataset
+diabetes = load_diabetes()
+df = pd.DataFrame(diabetes.data, columns=diabetes.feature_names)
+df['target'] = diabetes.target
+# Step 3: Line Plot for each variable over index
+plt.figure(figsize=(12, 8))
+for column in df.columns:
+plt.plot(df.index, df[column], label=column)
+plt.title("Line Plot of All Variables")
+plt.xlabel("Index")
+plt.ylabel("Values")
+plt.legend(loc='upper right', bbox_to_anchor=(1.15, 1))
+plt.tight_layout()
+plt.show()
+# Step 4: Scatter Plot (each feature vs target)
+for column in df.columns9
+plt.figure(figsize=(6, 4))
+sns.scatterplot(x=df[column], y=df['target'])
+plt.title(f"Scatter Plot: {column} vs Target")
+plt.xlabel(column)
+plt.ylabel("Target")
+plt.tight_layout()
+plt.show()
+# Step 5: Bar Plot (mean value of each feature)
+mean_values = df.mean().drop("target") # exclude target for clarity
+mean_values.plot(kind='bar', figsize=(10, 6), color='skyblue')
+plt.title("Bar Plot of Mean Feature Values")
+plt.xlabel("Features")
+plt.ylabel("Mean Value")
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+# Step 6: Pair Plot
+sns.pairplot(df[['bmi', 'bp', 's1', 's5', 'target']]) # select subset for readability
+plt.suptitle("Pair Plot of Selected Features", y=1.02)
+plt.show()
+# Step 7: Correlation Matrix
+corr_matrix = df.corr()
+print("Correlation Matrix:\n", corr_matrix)
+# Step 8: Heatmap
+plt.figure(figsize=(12, 8))10
+sns.heatmap(corr_matrix, annot=True, fmt=".2f", cmap="coolwarm",
+linewidths=0.5)
+plt.title("Correlation Heatmap of All Variables")
+plt.show()
