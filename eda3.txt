@@ -1,0 +1,33 @@
+# Step 1: Import Required Libraries
+import pandas as pd
+from sklearn.datasets import load_diabetes
+import seaborn as sns
+import matplotlib.pyplot as plt
+# Step 2: Load Diabetes Dataset
+diabetes = load_diabetes()
+df = pd.DataFrame(diabetes.data, columns=diabetes.feature_names)
+df['target'] = diabetes.target
+# Step 3: Display First 10 Rows
+print("First 10 Rows of the Dataset:\n")
+print(df.head(10))
+# Step 4: Check for Missing Values
+print("\nMissing Values in Each Column:\n")
+print(df.isnull().sum())
+# Step 5: Fill Missing Values (if any)
+# (Although sklearn's diabetes dataset doesn't have missing values, this is good
+practice)
+df.fillna(df.mean(), inplace=True)
+# Step 6: Check for Duplicates
+print("\nNumber of Duplicate Rows:", df.duplicated().sum())
+# Step 7: Remove Duplicates
+df.drop_duplicates(inplace=True)
+# Step 8: Correlation Matrix
+correlation_matrix = df.corr()
+print("\nCorrelation Matrix:\n")
+print(correlation_matrix)19
+# Step 9: Plot Heatmap for Correlation Matrix
+plt.figure(figsize=(12, 8))
+sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", fmt=".2f",
+linewidths=0.5)
+plt.title("Correlation Matrix Heatmap")
+plt.show()
