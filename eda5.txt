@@ -1,0 +1,74 @@
+import geopandas as gpd31
+import pandas as pd
+import plotly.express as px
+import plotly.io as pio
+# Use the notebook renderer for Plotly
+pio.renderers.default = "notebook" # or "notebook_connected" if you have internet
+# Load world shapefile from Natural Earth online
+url = "https://naciscdn.org/naturalearth/110m/cultural/ne_110m_admin_0_countries.zip"
+world = gpd.read_file(url)
+# Ensure geometry column exists
+if "geometry" not in world.columns:
+world.set_geometry(world.columns[-1], inplace=True)
+world = world.set_geometry("geometry")
+# Rename and filter columns
+rename_mapper = {
+"POP_EST": "pop_est",
+"CONTINENT": "continent",
+"ADMIN": "name",
+"ADM0_A3": "iso_a3",
+"GDP_MD": "gdp_md_est"
+}
+existing_cols = [col for col in rename_mapper.keys() if col in world.columns]
+world.rename({k: rename_mapper[k] for k in existing_cols}, axis=1, inplace=True)
+keep_cols = [v for k,v in rename_mapper.items() if k in existing_cols] + ["geometry"]
+world = world[keep_cols]
+# Compute area and population density32
+world_eq = world.to_crs("ESRI:54009")
+world["area_km2"] = world_eq.geometry.area / 1e6
+world["pop_density"] = world["pop_est"] / world["area_km2"].replace(0, pd.NA)
+# Prepare DataFrame and geojson
+world_df =
+world[["iso_a3","name","continent","pop_est","gdp_md_est","pop_density"]].copy()
+world_geojson = world.__geo_interface__
+# Plot choropleth
+fig = px.choropleth(
+world_df,
+geojson=world_geojson,
+locations="iso_a3",
+featureidkey="properties.iso_a3",
+color="pop_density",
+projection="natural earth",
+hover_name="name",
+hover_data={
+"continent": True,
+"pop_est": ":,",
+"gdp_md_est": ":,",
+"pop_density": ":.2f",
+"iso_a3": False,
+},
+title="World Choropleth — Interactive Metrics",
+)
+fig.update_geos(showcountries=True, showframe=False, showcoastlines=True,
+fitbounds="locations")
+fig.update_layout(margin=dict(l=0, r=0, t=50, b=0))33
+updatemenus = [
+dict(
+buttons=[
+dict(label="Population Density", method="restyle", args=[{"z":
+[world_df["pop_density"]]}, [0]]),
+dict(label="GDP (USD millions)", method="restyle", args=[{"z":
+[world_df["gdp_md_est"]]}, [0]]),
+dict(label="Population (est.)", method="restyle", args=[{"z": [world_df["pop_est"]]},
+[0]]),
+],
+direction="down",
+showactive=True,
+x=0.01, y=1.05,
+xanchor="left", yanchor="top",
+pad={"r": 10, "t": 5},
+)
+]
+fig.update_layout(updatemenus=updatemenus)
+# Show figure
+fig.show()
