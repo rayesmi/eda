@@ -1,0 +1,95 @@
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_diabetes
+from scipy.stats import skew, kurtosis
+# Load diabetes dataset
+diabetes = load_diabetes()
+# Convert to DataFrame
+df = pd.DataFrame(diabetes.data, columns=diabetes.feature_names)
+# Add target variable (optional)
+df['target'] = diabetes.target
+# Check the first few rows
+print(df.head())
+bmi = df['bmi']
+mean_bmi = bmi.mean()
+median_bmi = bmi.median()
+mode_bmi = bmi.mode().values[0] # mode() returns a Series
+print(f"Mean BMI: {mean_bmi}")
+print(f"Median BMI: {median_bmi}")
+print(f"Mode BMI: {mode_bmi}")
+range_bmi = bmi.max() - bmi.min()
+variance_bmi = bmi.var()
+std_dev_bmi = bmi.std()
+print(f"Range: {range_bmi}")
+print(f"Variance: {variance_bmi}")
+print(f"Standard Deviation: {std_dev_bmi}")
+skewness_bmi = skew(bmi)
+kurtosis_bmi = kurtosis(bmi)
+print(f"Skewness: {skewness_bmi}")
+print(f"Kurtosis: {kurtosis_bmi}")
+frequency_table = pd.cut(bmi, bins=10).value_counts().sort_index()
+print("Frequency Distribution:\n", frequency_table)
+# Plot histogram
+sns.histplot(bmi, bins=10, kde=True)
+plt.title("Frequency Distribution of BMI")
+plt.xlabel("BMI")
+plt.ylabel("Frequency")
+plt.show()
+percentiles = np.percentile(bmi, [25, 50, 75, 90])
+print(f"25th Percentile (Q1): {percentiles[0]}")
+print(f"50th Percentile (Median / Q2): {percentiles[1]}")
+print(f"75th Percentile (Q3): {percentiles[2]}")
+print(f"90th Percentile: {percentiles[3]}")
+summary_stats = bmi.describe()
+print("Summary Statistics:\n", summary_stats)
+
+OUTPUT
+age sex bmi bp s1 s2 s3 \
+0 0.038076 0.050680 0.061696 0.021872 -0.044223 -0.034821 -0.043401
+1 -0.001882 -0.044642 -0.051474 -0.026328 -0.008449 -0.019163 0.074412
+2 0.085299 0.050680 0.044451 -0.005670 -0.045599 -0.034194 -0.032356
+3 -0.089063 -0.044642 -0.011595 -0.036656 0.012191 0.024991 -0.036038
+4 0.005383 -0.044642 -0.036385 0.021872 0.003935 0.015596 0.008142
+s4 s5 s6 target
+0 -0.002592 0.019907 -0.017646 151.0
+1 -0.039493 -0.068332 -0.092204 75.0
+2 -0.002592 0.002861 -0.025930 141.0
+3 0.034309 0.022688 -0.009362 206.0
+4 -0.002592 -0.031988 -0.046641 135.0
+Mean BMI: -2.2455642172282577e-16
+Median BMI: -0.007283766209687899
+Mode BMI: -0.03099563183506548
+Range: 0.2608305218791535
+Variance: 0.0022675736961451243
+Standard Deviation: 0.047619047619047616
+Skewness: 0.5961166556214368
+Kurtosis: 0.08047812866813064
+Frequency Distribution:
+bmi
+(-0.0905, -0.0642] 32
+(-0.0642, -0.0381] 66
+(-0.0381, -0.012] 98
+(-0.012, 0.0141] 90
+(0.0141, 0.0401] 61
+(0.0401, 0.0662] 53
+(0.0662, 0.0923]23
+(0.0923, 0.118] 12
+(0.118, 0.144] 5
+(0.144, 0.171] 2
+Name: count, dtype: int64
+25th Percentile (Q1): -0.03422906805670789
+50th Percentile (Median / Q2): -0.007283766209687899
+75th Percentile (Q3): 0.031248015431550695
+90th Percentile: 0.06363626825166878
+Summary Statistics:
+count 4.420000e+02
+mean -2.245564e-16
+std 4.761905e-02
+min -9.027530e-02
+25% -3.422907e-02
+50% -7.283766e-03
+75% 3.124802e-02
+max 1.705552e-01
+Name: bmi, dtype: float64
