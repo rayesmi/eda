@@ -1,0 +1,19 @@
+import geopandas as gpd
+import matplotlib.pyplot as plt
+# --- Load World Countries (Natural Earth shapefile) ---
+world = gpd.read_file("https://raw.githubusercontent.com/datasets/geo-
+countries/master/data/countries.geojson")
+# --- Load India States & Districts (GeoJSONs) ---
+india_states = gpd.read_file("india_state.geojson")36
+india_districts = gpd.read_file("india_district.geojson")
+# --- Plot ---
+fig, ax = plt.subplots(figsize=(14, 10))
+# Plot world
+world.plot(ax=ax, color="lightgrey", edgecolor="darkgreen")
+# Plot India states
+india_states.plot(ax=ax, color="lightgreen", edgecolor="black", alpha=0.7)
+# Plot India districts
+india_districts.plot(ax=ax, color="lightblue", edgecolor="blue", alpha=0.4)
+plt.title("Cartographic Visualization: World + India States & Districts", fontsize=16)
+plt.axis("off")
+plt.show()
